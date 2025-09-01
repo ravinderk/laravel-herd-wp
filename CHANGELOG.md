@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.3.0] - 2025-09-01
+
+### ✨ Added
+- **🖥️ Terminal Error Detection** - PHP error template now automatically detects terminal/CLI environments
+- **📋 Copy Error Button** - New copy button in web error pages for easy debugging with GitHub Copilot
+- **🎯 Environment-Specific Formatting** - Clean terminal output for CLI, beautiful HTML for web browsers
+- **⚡ Smart Error Display** - Automatic switching between terminal and web error formats
+
+### 🔄 Changed
+- **💥 Enhanced PHP Error Template** - Improved `.php-error-template` with dual-mode error display
+- **🎨 Terminal-Friendly Output** - Clean, formatted error messages for command-line environments
+- **📱 Better Web Interface** - Added copy functionality to existing beautiful HTML error pages
+
+### 🎨 Improved
+- **🔍 Developer Experience** - Easy error sharing with GitHub Copilot via copy button
+- **⌨️ CLI Compatibility** - Terminal errors display without colors or formatting codes
+- **🎭 User Experience** - Seamless error handling across different environments
+- **📊 Error Information** - Consistent error details across terminal and web formats
+
+### 🐛 Fixed
+- **🖥️ Terminal Display Issues** - Proper error formatting for CLI environments
+- **📋 Copy Functionality** - Cross-browser clipboard support with fallback methods
+- **🔄 Environment Detection** - Reliable detection of CLI vs web environments
+
 ## [2.2.0] - 2025-07-07
 
 ### ✨ Added
