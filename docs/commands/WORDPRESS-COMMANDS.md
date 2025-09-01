@@ -118,16 +118,69 @@ The error template includes:
 - **Responsive Design**: Works on desktop and mobile
 - **Timestamp**: When the error occurred
 - **Helpful Actions**: Suggestions for debugging
+- **🖥️ Smart Environment Detection**: Automatically detects terminal vs browser environments
+- **📋 Copy Error Button**: One-click copying for GitHub Copilot debugging
+- **⌨️ Terminal-Friendly Output**: Clean formatting for CLI environments
+
+### Smart Error Detection
+
+The error template intelligently detects the environment where it's running:
+
+- **🌐 Web Browser**: Shows beautiful HTML error page with copy button
+- **🖥️ Terminal/CLI**: Displays clean, formatted text output without HTML
+- **📋 Copy Functionality**: Browser users can copy terminal-formatted error text
+
+### Copy Button for Debugging
+
+When viewing errors in a web browser, you'll see a "📋 Copy Error for Debugging" button that:
+
+- **📋 One-Click Copy**: Copies error details in clean terminal format
+- **🤖 GitHub Copilot Ready**: Formatted perfectly for AI debugging assistance
+- **✅ Visual Feedback**: Button turns green and shows "Copied!" when successful
+- **🔄 Cross-Browser Support**: Works in all modern browsers with fallback methods
+
+The copied text format looks like:
+```
+💥 PHP FATAL ERROR
+==================================================
+
+Error Message:
+Call to undefined function some_function()
+
+Error Type:
+Fatal Error (1)
+
+File:
+/path/to/file.php
+
+Line:
+42
+
+Timestamp: 2025-09-01 10:30:45 UTC
+==================================================
+```
 
 ### Example Error Display
 
-When a fatal error occurs, instead of a blank white page, you'll see:
+When a fatal error occurs, the template provides different experiences based on environment:
+
+#### 🌐 Web Browser Display
+Instead of a blank white page, you'll see:
 
 - 💥 Clear error icon and title
-- 📋 Formatted error message
+- 📋 Formatted error message with copy button
 - 📊 Color-coded stack trace
 - 📁 File and line information
 - 🕐 Timestamp of when error occurred
+- 📋 "Copy Error for Debugging" button for GitHub Copilot
+
+#### 🖥️ Terminal/CLI Display
+When running in terminal (via WP-CLI, cron jobs, etc.), you'll see:
+
+- Clean, formatted text output without HTML
+- Error details organized by sections
+- Easy-to-read information layout
+- Proper exit codes for script handling
 
 ## 🎯 Use Cases
 
