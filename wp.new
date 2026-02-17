@@ -131,6 +131,17 @@ fi
 
 echo "" # Spacer
 
+# --- WordPress Version Selection ---
+read -p "🔄 Enter WordPress Version (e.g., 6.4.1, 6.4, leave blank for latest): " WP_VERSION
+if [ -z "$WP_VERSION" ]; then
+    WP_VERSION="latest"
+    echo "✅ Using latest WordPress version"
+else
+    echo "✅ Using WordPress version: $WP_VERSION"
+fi
+
+echo "" # Spacer
+
 # --- 3. Create Site Directory ---
 if [ "$DRY_RUN" = "true" ]; then
     echo "🔍 [DRY RUN] Would create site directory: $SITE_PATH"
@@ -145,11 +156,11 @@ fi
 
 # --- 4. Download WordPress using WP-CLI ---
 if [ "$DRY_RUN" = "true" ]; then
-    echo "🔍 [DRY RUN] Would download WordPress core to $SITE_PATH using WP-CLI..."
+    echo "🔍 [DRY RUN] Would download WordPress core (version: $WP_VERSION) to $SITE_PATH using WP-CLI..."
 else
-    echo "⬇️ Downloading WordPress core to $SITE_PATH using WP-CLI..."
+    echo "⬇️ Downloading WordPress core (version: $WP_VERSION) to $SITE_PATH using WP-CLI..."
     # Use php directly with memory limit to run wp-cli
-    php -d memory_limit=-1 -d max_execution_time=0 $(which wp) core download --path="$SITE_PATH"
+    php -d memory_limit=-1 -d max_execution_time=0 $(which wp) core download --path="$SITE_PATH" --version="$WP_VERSION"
     if [ $? -ne 0 ]; then
         echo "❌ Error: Failed to download WordPress core using WP-CLI. Check your internet connection or permissions for $SITE_PATH."
         exit 1
