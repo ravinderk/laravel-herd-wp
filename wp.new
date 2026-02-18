@@ -18,10 +18,12 @@ show_usage() {
     echo "This script automates WordPress site creation with Herd."
     echo "----------------------------------------------------"
     echo ""
-    echo "Usage: $0 [--dry-run]"
+    echo "Usage: $0 [--dry-run] [--ms|-multisite]"
     echo ""
     echo "Options:"
     echo "  --dry-run       - Show what would be done without making changes"
+    echo "  --ms, -multisite - Install WordPress multisite (subdirectory mode)"
+    echo "  -h, --help      - Show this help message"
     echo ""
     echo "This interactive script will:"
     echo "  • Create a new WordPress site with smart defaults"
@@ -34,6 +36,7 @@ show_usage() {
     echo "  🗄️ Creates both main and test databases"
     echo "  🔒 Automatic HTTPS setup"
     echo "  🔌 Pre-installs development plugins"
+    echo "  🌐 Optional multisite install (subdirectory only)"
     echo ""
     echo "Default credentials:"
     echo "  Username: admin"
@@ -45,6 +48,36 @@ show_usage() {
 command_exists () {
   type "$1" &> /dev/null ;
 }
+
+# --- Parse command line arguments ---
+DRY_RUN="false"
+MULTISITE="false"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dry-run)
+            DRY_RUN="true"
+            ;;
+        --ms|--multisite)
+            MULTISITE="true"
+            ;;
+        -h|--help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            echo "❌ Unknown option: $1"
+            echo ""
+            show_usage
+            exit 1
+            ;;
+    esac
+    shift
+done
+
+if [ "$MULTISITE" = "true" ]; then
+    echo "🌐 Multisite mode enabled (subdirectory network)"
+fi
 
 # --- 1. Check for WP-CLI and Herd ---
 echo "🔍 Checking for WP-CLI..."
@@ -214,19 +247,44 @@ else
 fi
 
 # --- 7. Install WordPress using WP-CLI ---
-echo "✅ Installing WordPress core using WP-CLI..."
-php -d memory_limit=-1 -d max_execution_time=0 $(which wp) core install \
-    --path="$SITE_PATH" \
-    --url="http://${SITE_NAME}.test" \
-    --title="$WP_SITE_TITLE" \
-    --admin_user="$WP_ADMIN_USER" \
-    --admin_password="$WP_ADMIN_PASSWORD" \
-    --admin_email="$WP_ADMIN_EMAIL" \
-    --skip-email # Skips sending an email to the admin email address
-if [ $? -ne 0 ]; then
-    echo "❌ Error: Failed to install WordPress core using WP-CLI."
-    echo "   Possible issues: Site URL conflict, database connection problem, or WordPress already installed."
-    exit 1
+if [ "$DRY_RUN" = "true" ]; then
+    if [ "$MULTISITE" = "true" ]; then
+        echo "🔍 [DRY RUN] Would install WordPress multisite (subdirectory mode) using WP-CLI..."
+    else
+        echo "🔍 [DRY RUN] Would install WordPress core using WP-CLI..."
+    fi
+else
+    if [ "$MULTISITE" = "true" ]; then
+        echo "✅ Installing WordPress multisite (subdirectory mode) using WP-CLI..."
+        php -d memory_limit=-1 -d max_execution_time=0 $(which wp) core multisite-install \
+            --path="$SITE_PATH" \
+            --url="http://${SITE_NAME}.test" \
+            --title="$WP_SITE_TITLE" \
+            --admin_user="$WP_ADMIN_USER" \
+            --admin_password="$WP_ADMIN_PASSWORD" \
+            --admin_email="$WP_ADMIN_EMAIL" \
+            --skip-email
+    else
+        echo "✅ Installing WordPress core using WP-CLI..."
+        php -d memory_limit=-1 -d max_execution_time=0 $(which wp) core install \
+            --path="$SITE_PATH" \
+            --url="http://${SITE_NAME}.test" \
+            --title="$WP_SITE_TITLE" \
+            --admin_user="$WP_ADMIN_USER" \
+            --admin_password="$WP_ADMIN_PASSWORD" \
+            --admin_email="$WP_ADMIN_EMAIL" \
+            --skip-email # Skips sending an email to the admin email address
+    fi
+
+    if [ $? -ne 0 ]; then
+        if [ "$MULTISITE" = "true" ]; then
+            echo "❌ Error: Failed to install WordPress multisite using WP-CLI."
+        else
+            echo "❌ Error: Failed to install WordPress core using WP-CLI."
+        fi
+        echo "   Possible issues: Site URL conflict, database connection problem, or WordPress already installed."
+        exit 1
+    fi
 fi
 
 # --- 8. Install recommended plugins ---
