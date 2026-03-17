@@ -106,17 +106,25 @@ configure_xdebug() {
     echo "✅ Xdebug ${action_desc}d successfully!"
     
     # Restart Herd to apply changes
-    if [ "$dry_run" = "true" ]; then
-        echo "🔄 [Dry Run] Herd restart (not actually restarting)"
-    else
-        echo "🔄 Restarting Herd to apply configuration changes..."
-        herd restart
-        if [ $? -eq 0 ]; then
-            echo "✅ Herd restarted successfully!"
+        # Stop and start Herd to apply changes to all PHP versions
+        if [ "$dry_run" = "true" ]; then
+            echo "🔄 [Dry Run] Would run 'herd stop' and 'herd start' (not actually stopping/starting)"
         else
-            echo "⚠️ Warning: Failed to restart Herd. You may need to restart manually."
+            echo "🔄 Stopping Herd to apply configuration changes..."
+            herd stop
+            if [ $? -eq 0 ]; then
+                echo "✅ Herd stopped successfully!"
+            else
+                echo "⚠️ Warning: Failed to stop Herd. You may need to stop it manually."
+            fi
+            echo "🔄 Starting Herd to apply configuration changes..."
+            herd start
+            if [ $? -eq 0 ]; then
+                echo "✅ Herd started successfully!"
+            else
+                echo "⚠️ Warning: Failed to start Herd. You may need to start it manually."
+            fi
         fi
-    fi
     
     if [ "$mode" = "debug" ]; then
         echo ""
